@@ -4,3 +4,4 @@ plugins {
 
 rootProject.name = "integration-test-toolkit"
 include("lib")
+include("demo-app")
