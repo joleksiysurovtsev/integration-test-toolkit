@@ -14,7 +14,7 @@ plugins {
 }
 
 group = "dev.surovtsev.integration-test-toolkit"
-version = scmVersion.version
+version = scmVersion.version + 7
 
 repositories {
     mavenLocal()
@@ -38,6 +38,7 @@ dependencies {
     api(libs.testcontainers)            // Core Testcontainers library
     api(libs.testcontainers.kafka)      // Testcontainers support for Kafka
     api(libs.testcontainers.postgresql) // Testcontainers support for PostgreSQL
+    api(libs.jakarta.persistence)
 
     // ==== JUnit ====
     api(libs.junit.jupiter)             // JUnit 5 testing framework API
@@ -55,6 +56,7 @@ dependencies {
 
     // ==== Kotlin Reflection ====
     api(libs.kotlin.reflect)            // Kotlin reflection support (required for some serialization/deserialization)
+    api("org.awaitility:awaitility-kotlin:4.2.0")
 }
 
 val sourcesJar by tasks.registering(Jar::class) {

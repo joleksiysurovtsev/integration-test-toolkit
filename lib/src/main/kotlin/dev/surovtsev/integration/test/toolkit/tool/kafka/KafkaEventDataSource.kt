@@ -1,6 +1,10 @@
-package dev.surovtsev.integration.test.toolkit.containers.kafka
+package dev.surovtsev.integration.test.toolkit.tool.kafka
 
 import com.zaxxer.hikari.HikariDataSource
+import dev.surovtsev.integration.test.toolkit.containers.kafka.IntegrationKafkaContainer
+import dev.surovtsev.integration.test.toolkit.containers.kafka.KafkaEventDefinition
+import dev.surovtsev.integration.test.toolkit.containers.kafka.KafkaEventRegistry
+import dev.surovtsev.integration.test.toolkit.containers.kafka.KafkaHeaders
 import dev.surovtsev.integration.test.toolkit.json.JsonUtil
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.consumer.ConsumerRecord
@@ -14,11 +18,12 @@ import java.util.*
 import javax.sql.DataSource
 
 @Component
-class EventDataSource(
+class KafkaEventDataSource(
 	private val kafkaEventRegistry: KafkaEventRegistry
 ) {
 
 	private val jdbcTemplate: JdbcTemplate
+
 
 	init {
 		val dataSource = createInMemoryDataSource()
@@ -96,14 +101,16 @@ class EventDataSource(
 	private fun setupConsumerLoop() {
 		val consumer = KafkaConsumer<String, String>(getProperties())
 		consumer.subscribe(kafkaEventRegistry.topics)
-
 		Thread {
 			while (true) {
 				try {
-					consumer.poll(Duration.ofSeconds(2)).forEach { saveEvent(it) }
+					consumer.poll(Duration.ofSeconds(2)).forEach { event ->
+						saveEvent(event)
+					}
 				} catch (t: Throwable) {
 					t.printStackTrace()
 				}
+
 			}
 		}.start()
 	}
@@ -113,13 +120,13 @@ class EventDataSource(
 	 */
 	private fun getProperties(): Properties {
 		return Properties().apply {
-			put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, IntegrationKafkaContainer.getBootstrap())
-			put(ConsumerConfig.GROUP_ID_CONFIG, "consumerLoop-itTest")
-			put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest")
-			put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer::class.java.name)
-			put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer::class.java.name)
-			put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, "100")
-			put(ConsumerConfig.MAX_PARTITION_FETCH_BYTES_CONFIG, (ConsumerConfig.DEFAULT_FETCH_MAX_BYTES * 5).toString())
+			this[ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG] = IntegrationKafkaContainer.getBootstrap()
+			this[ConsumerConfig.GROUP_ID_CONFIG] = "consumerLoop-itTest"
+			this[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = "earliest"
+			this[ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG] = StringDeserializer::class.java.name
+			this[ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG] = StringDeserializer::class.java.name
+			this[ConsumerConfig.MAX_POLL_RECORDS_CONFIG] = "100"
+			this[ConsumerConfig.MAX_PARTITION_FETCH_BYTES_CONFIG] = ConsumerConfig.DEFAULT_FETCH_MAX_BYTES.times(5)
 		}
 	}
 

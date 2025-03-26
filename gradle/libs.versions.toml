@@ -9,6 +9,7 @@ testcontainers = "1.20.5"
 wiremock = "1.20.5"
 junit-jupiter = "5.12.0"
 kafka-clients = "3.9.0"
+jakarta-persistence = "3.1.0"
 jackson = "2.18.2"
 json-simple = "1.1"
 kotlin-reflect = "2.1.20-RC"
@@ -32,6 +33,7 @@ spring-data-commons = { module = "org.springframework.data:spring-data-commons",
 testcontainers = { module = "org.testcontainers:testcontainers", version.ref = "testcontainers" }
 testcontainers-kafka = { module = "org.testcontainers:kafka", version.ref = "testcontainers" }
 testcontainers-postgresql = { module = "org.testcontainers:postgresql", version.ref = "testcontainers" }
+jakarta-persistence = { module = "jakarta.persistence:jakarta.persistence-api", version.ref = "jakarta-persistence" }
 
 # ==== WireMockContainer====
 tomakehurst-wiremock = { module = "com.github.tomakehurst:wiremock", version.ref = "wiremock" }

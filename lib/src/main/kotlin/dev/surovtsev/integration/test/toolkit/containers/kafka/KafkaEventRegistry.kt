@@ -13,12 +13,3 @@ class KafkaEventRegistry(
     val topics: Set<String> = events.map { it.topicName }.toSet()
     val supportedEvents: Set<String> = eventDefinitions.keys
 }
-
-
-@Component
-class TestEvent : KafkaEventDefinition<String> {
-    override val eventType = "test"
-    override val topicName = "test"
-    override val kClass = String::class
-    override val messageOriginator = "test"
-}

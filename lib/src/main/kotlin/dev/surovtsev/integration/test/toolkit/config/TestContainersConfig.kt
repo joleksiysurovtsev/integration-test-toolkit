@@ -1,10 +1,11 @@
 package dev.surovtsev.integration.test.toolkit.config
 
 import dev.surovtsev.integration.test.toolkit.containers.PostgresContainer
-import dev.surovtsev.integration.test.toolkit.containers.kafka.EventDataSource
+import dev.surovtsev.integration.test.toolkit.tool.kafka.KafkaEventDataSource
 import dev.surovtsev.integration.test.toolkit.containers.kafka.IntegrationKafkaContainer
 import dev.surovtsev.integration.test.toolkit.containers.kafka.KafkaEventDefinition
 import dev.surovtsev.integration.test.toolkit.containers.kafka.KafkaEventRegistry
+import dev.surovtsev.integration.test.toolkit.tool.kafka.ExampleKafkaEvent
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.jdbc.DataSourceBuilder
@@ -36,7 +37,7 @@ open class TestContainersConfig {
 
     @Bean(initMethod = "start", destroyMethod = "stop")
     @ConditionalOnProperty(name = ["test.kafka.enabled"], havingValue = "true", matchIfMissing = false)
-    open fun kafkaContainer(): IntegrationKafkaContainer = IntegrationKafkaContainer.getInstance()
+    open fun kafkaCoяntainer(): IntegrationKafkaContainer = IntegrationKafkaContainer.getInstance()
 
     @Bean
     @ConditionalOnProperty(name = ["test.kafka.enabled"], havingValue = "true", matchIfMissing = false)
@@ -51,6 +52,14 @@ open class TestContainersConfig {
         matchIfMissing = false
     )
     @DependsOn("kafkaEventRegistry")
-    open fun eventDataSource(kafkaEventRegistry: KafkaEventRegistry): EventDataSource =
-        EventDataSource(kafkaEventRegistry)
+    open fun eventDataSource(kafkaEventRegistry: KafkaEventRegistry): KafkaEventDataSource =
+        KafkaEventDataSource(kafkaEventRegistry)
+
+    @Bean
+    @ConditionalOnProperty(
+        name = ["test.kafka.enabled"],
+        havingValue = "true",
+        matchIfMissing = false
+    )
+    open fun testEvent(): KafkaEventDefinition<String> = ExampleKafkaEvent()
 }
