@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE instance-profile
+        SYSTEM "https://resources.jetbrains.com/writerside/1.0/product-profile.dtd">
+
+<instance-profile id="integration-test-toolkit"
+                 name="integration-test-toolkit"
+                 start-page="introduction.md">
+
+    <toc-element topic="introduction.md"/>
+    <toc-element topic="kafka-event-receiver.md"/>
+    <toc-element topic="kafka-test-producer.md"/>
+    <toc-element topic="pg-query-tool.md"/>
+</instance-profile>
