@@ -1,0 +1,44 @@
+server:
+  shutdown: immediate
+spring:
+  profiles:
+    active: test
+  application:
+    name: demo-app
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      pool-name: H2HikariPool
+      leak-detection-threshold: 60000
+      maximum-pool-size: 1000
+      minimum-idle: 10
+    url: jdbc:postgresql://localhost:5432/demo-app
+    username: postgres
+    password: postgres
+    db-name: ${FLO_POSTGRES_DB_NAME:demo-app}
+  liquibase:
+    change-log: classpath:/liquibase/liquibase-changeLog.xml
+    contexts: test
+  main:
+    allow-bean-definition-overriding: true
+  jpa:
+    properties:
+      hibernate.integration.envers.enabled: false
+      hibernate.id.db_structure_naming_strategy: legacy
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  kafka:
+    consumer:
+      group-id: ${spring.application.name}
+
+logging:
+  level:
+    com.flo: DEBUG
+    com.zaxxer.hikari: TRACE
+
+test:
+  postgres:
+    enabled: true
+  kafka:
+    enabled: true

@@ -1,17 +1,7 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
-    alias(libs.plugins.kotlin.jvm)
-    id("org.springframework.boot") version libs.versions.spring.boot.ver.get()
-    id("io.spring.dependency-management") version "1.1.7"
-}
-
-group = "dev.surovtsev.demo-app"
-version = "0.0.1-SNAPSHOT"
-
-repositories {
-    mavenLocal()
-    mavenCentral()
+    kotlin("jvm")
+    id("org.springframework.boot")
+    id("io.spring.dependency-management")
 }
 
 dependencies {
@@ -20,29 +10,31 @@ dependencies {
 
     // Spring Boot dependencies
     implementation(libs.spring.boot.starter.web)
-    
+    implementation(libs.spring.boot.data.jpa)
+
     // Kafka dependencies
     implementation(libs.spring.kafka)
-    
+
     // Database dependencies
     implementation(libs.spring.jdbc)
     implementation(libs.h2database)
-    
+    implementation(libs.kotlinx.coroutines.core)
+
+    // JSON processing
+    implementation(libs.jackson.databind)
+    implementation(libs.jackson.core)
+    implementation(libs.jackson.annotations)
+
+    // Database
+    implementation(libs.postgresql)
+    implementation(libs.liquibase.core)
+
     // Test dependencies
     testImplementation(libs.spring.boot.test)
     testImplementation(libs.junit.jupiter)
-}
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
-}
-
-tasks.withType<KotlinCompile> {
-    kotlinOptions {
-        freeCompilerArgs = listOf("-Xjsr305=strict")
-        jvmTarget = "17"
-    }
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.1")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.1")
 }
 
 tasks.withType<Test> {

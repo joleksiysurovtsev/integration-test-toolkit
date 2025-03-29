@@ -1,62 +1,56 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import pl.allegro.tech.build.axion.release.domain.hooks.HookContext
 import pl.allegro.tech.build.axion.release.domain.properties.TagProperties
 import pl.allegro.tech.build.axion.release.domain.scm.ScmPosition
 
 plugins {
-    alias(libs.plugins.kotlin.jvm)
     id("pl.allegro.tech.build.axion-release") version "1.18.16"
     id("com.gorylenko.gradle-git-properties") version "2.4.2"
-    id("org.springframework.boot") version libs.versions.spring.boot.ver.get() apply false
-    id("io.spring.dependency-management") version "1.1.7"
     `java-library`
     `maven-publish`
 }
 
-group = "dev.surovtsev.integration-test-toolkit"
-version = scmVersion.version + 7
-
-repositories {
-    mavenLocal()
-    mavenCentral()
-}
+version = scmVersion.version
 
 dependencies {
     // ==== Core Spring dependencies ====
     api(libs.spring.context)            // Spring IoC container (dependency injection, bean management)
-    api(libs.spring.web)
-    api(libs.spring.boot.starter.web)
-    api(libs.spring.boot.test)          // Spring Boot testing utilities (includes JUnit, Mockito, etc.)
-    api(libs.spring.jdbc)               // Spring JDBC support for database interactions
+    api(libs.spring.web)                // Spring Web support
+    api(libs.spring.boot.starter.web)   // Spring Boot Web starter
     api(libs.spring.kafka)              // Spring Kafka integration
 
-    // ==== Spring test & data dependencies ====
-    api(libs.spring.test)
+    // ==== Database dependencies ====
+    api(libs.spring.jdbc)               // Spring JDBC support for database interactions
+    api(libs.h2database)                // H2 in-memory database
+    api(libs.hikariCP)                  // HikariCP connection pool
+    api(libs.jakarta.persistence)       // Jakarta Persistence API
+
+    // ==== Spring Data ====
     api(libs.spring.data.commons)       // Spring Data common components (e.g., repository support)
+
+    // ==== Testing dependencies ====
+    implementation(libs.spring.boot.test)    // Spring Boot testing utilities
+    implementation(libs.spring.test)         // Spring Test support
+    implementation(libs.junit.jupiter)       // JUnit 5 testing framework API
+    implementation(libs.awaitility.kotlin)   // Awaitility for Kotlin (async testing)
 
     // ==== TestContainers ====
     api(libs.testcontainers)            // Core Testcontainers library
     api(libs.testcontainers.kafka)      // Testcontainers support for Kafka
     api(libs.testcontainers.postgresql) // Testcontainers support for PostgreSQL
-    api(libs.jakarta.persistence)
-
-    // ==== JUnit ====
-    api(libs.junit.jupiter)             // JUnit 5 testing framework API
 
     // ==== Apache Kafka ====
     api(libs.kafka.clients)             // Kafka client for producer/consumer communication with Kafka broker
-    api(libs.h2database)
-    api(libs.hikariCP)
 
     // ==== JSON processing (Jackson) ====
     api(libs.jackson.databind)          // Core Jackson library for JSON serialization/deserialization
+    api(libs.jackson.core)              // Jackson Core
+    api(libs.jackson.annotations)       // Jackson Annotations
     api(libs.jackson.datatype.jsr310)   // Jackson module for Java 8+ date/time support (`java.time`)
     api(libs.jackson.module.kotlin)     // Jackson module for better Kotlin compatibility
-    api(libs.json.simple)               // Lightweight JSON parsing library
+    implementation(libs.json.simple)    // Lightweight JSON parsing library
 
     // ==== Kotlin Reflection ====
-    api(libs.kotlin.reflect)            // Kotlin reflection support (required for some serialization/deserialization)
-    api("org.awaitility:awaitility-kotlin:4.2.0")
+    implementation(libs.kotlin.reflect) // Kotlin reflection support (required for some serialization/deserialization)
 }
 
 val sourcesJar by tasks.registering(Jar::class) {
@@ -78,17 +72,6 @@ publishing {
     }
 }
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
-}
-
-tasks.withType<KotlinCompile> {
-    kotlinOptions {
-        freeCompilerArgs = listOf("-Xjsr305=strict")
-        jvmTarget = "17"
-    }
-}
 
 gitProperties {
     failOnNoGitDirectory = false
