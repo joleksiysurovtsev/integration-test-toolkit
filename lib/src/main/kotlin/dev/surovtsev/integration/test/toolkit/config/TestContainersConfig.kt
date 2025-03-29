@@ -37,7 +37,7 @@ open class TestContainersConfig {
 
     @Bean(initMethod = "start", destroyMethod = "stop")
     @ConditionalOnProperty(name = ["test.kafka.enabled"], havingValue = "true", matchIfMissing = false)
-    open fun kafkaContainer(): IntegrationKafkaContainer = IntegrationKafkaContainer.getInstance()
+    open fun kafkaCoяntainer(): IntegrationKafkaContainer = IntegrationKafkaContainer.getInstance()
 
     @Bean
     @ConditionalOnProperty(name = ["test.kafka.enabled"], havingValue = "true", matchIfMissing = false)
